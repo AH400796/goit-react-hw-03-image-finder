@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThreeDots } from 'react-loader-spinner';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { LoadButton, ButtonWrapper } from './Button.styled';
 
 export default function Button({ onClick, isLoading }) {
@@ -26,7 +26,7 @@ export default function Button({ onClick, isLoading }) {
   );
 }
 
-// ContactForm.propTypes = {
-//   contacts: PropTypes.arrayOf(PropTypes.object).isRequired,
-//   onSubmitForm: PropTypes.func.isRequired,
-// };
+Button.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
+};

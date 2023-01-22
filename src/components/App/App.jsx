@@ -18,11 +18,13 @@ export default class App extends Component {
     showModal: false,
     isLoading: false,
     page: 1,
+    lastPage: null,
   };
 
   handleSearchSubmit = searchQuery => {
     this.setState({
       page: 1,
+      lastPage: null,
       images: null,
       isLoading: true,
       searchQuery: searchQuery,
@@ -30,12 +32,13 @@ export default class App extends Component {
     const { page } = this.state;
 
     fetchImges(page, searchQuery)
-      .then(response =>
+      .then(response => {
         this.setState(prevState => ({
           images: response.data.hits,
+          lastPage: Math.ceil(response.data.totalHits / 12),
           page: prevState.page + 1,
-        }))
-      )
+        }));
+      })
       .finally(this.setState({ isLoading: false }));
   };
 
@@ -55,8 +58,8 @@ export default class App extends Component {
   };
 
   componentDidUpdate(_, prevState) {
-    if (this.state.page !== prevState.page) {
-      this.smoothImagesScroll();
+    if (this.state.page > prevState.page) {
+      setTimeout(this.smoothImagesScroll, 500);
     }
   }
 
@@ -79,7 +82,8 @@ export default class App extends Component {
   };
 
   render() {
-    const { images, showModal, modalUrl, isLoading } = this.state;
+    const { images, showModal, modalUrl, isLoading, page, lastPage } =
+      this.state;
     return (
       <Wrapper>
         <Toaster />
@@ -96,7 +100,7 @@ export default class App extends Component {
             isLoading={isLoading}
           />
         )}
-        {images && images.length !== 0 && (
+        {images && images.length !== 0 && page !== lastPage && (
           <Button
             onClick={this.handleClickOnLoadMoreButton}
             isLoading={isLoading}

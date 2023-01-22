@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import { createPortal } from 'react-dom';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { Overlay, ModalWindow } from './Modal.styled';
 const modalRoot = document.querySelector('#modal-root');
 
 export default class Modal extends Component {
+  static propTypes = {
+    onClose: PropTypes.func.isRequired,
+    children: PropTypes.node,
+  };
+
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyEscape);
   }
@@ -18,6 +23,7 @@ export default class Modal extends Component {
       this.props.onClose();
     }
   };
+
   handleBackdropClick = event => {
     if (event.target === event.currentTarget) {
       this.props.onClose();
@@ -33,8 +39,3 @@ export default class Modal extends Component {
     );
   }
 }
-
-// Filter.propTypes = {
-//   filter: PropTypes.string.isRequired,
-//   onChange: PropTypes.func.isRequired,
-// };

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { Header, Form, Input, Button } from './Searchbar.styled';
 import { AiOutlineSearch } from 'react-icons/ai';
 import toast from 'react-hot-toast';
@@ -7,6 +7,10 @@ import toast from 'react-hot-toast';
 export default class Searchbar extends Component {
   state = {
     searchQuery: '',
+  };
+
+  static propTypes = {
+    onSubmitForm: PropTypes.func.isRequired,
   };
 
   handleSubmitForm = event => {
@@ -57,8 +61,3 @@ export default class Searchbar extends Component {
     );
   }
 }
-
-// ContactForm.propTypes = {
-//   contacts: PropTypes.arrayOf(PropTypes.object).isRequired,
-//   onSubmitForm: PropTypes.func.isRequired,
-// };

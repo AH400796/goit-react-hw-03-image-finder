@@ -1,5 +1,5 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { ListItem, Image } from './ImageGalleryItem.styled';
 
 export default function ImageGalleryItem({
@@ -14,9 +14,8 @@ export default function ImageGalleryItem({
   );
 }
 
-// ContactListItem.propTypes = {
-//   name: PropTypes.string.isRequired,
-//   number: PropTypes.string.isRequired,
-//   deleteContact: PropTypes.func.isRequired,
-//   userId: PropTypes.string.isRequired,
-// };
+ImageGalleryItem.propTypes = {
+  webformatURL: PropTypes.string.isRequired,
+  largeImageURL: PropTypes.string.isRequired,
+  handleOnClickImage: PropTypes.func.isRequired,
+};

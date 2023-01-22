@@ -1,7 +1,13 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import ImageGalleryItem from 'components/ImageGalleryItem';
+import Loader from 'components/Loader';
 import { List } from './ImageGallery.styled';
+
+let skeleton = [];
+for (let i = 0; i < 12; i += 1) {
+  skeleton.push(i);
+}
 
 export default function ImageGallery({
   images,
@@ -10,6 +16,13 @@ export default function ImageGallery({
 }) {
   return (
     <>
+      {isLoading && (
+        <List>
+          {skeleton.map((el, idx) => {
+            return <Loader key={idx} />;
+          })}
+        </List>
+      )}
       {images && (
         <List>
           {images.map(image => {
@@ -20,6 +33,7 @@ export default function ImageGallery({
                 webformatURL={webformatURL}
                 largeImageURL={largeImageURL}
                 handleOnClickImage={handleOnClickImage}
+                isLoading={isLoading}
               />
             );
           })}
@@ -29,7 +43,7 @@ export default function ImageGallery({
   );
 }
 
-// ContactList.propTypes = {
-//   contacts: PropTypes.arrayOf(PropTypes.object).isRequired,
-//   deleteContact: PropTypes.func.isRequired,
-// };
+ImageGallery.propTypes = {
+  images: PropTypes.arrayOf(PropTypes.object).isRequired,
+  handleOnClickImage: PropTypes.func.isRequired,
+};
