@@ -1,80 +1,107 @@
 import React, { Component } from 'react';
-import { nanoid } from 'nanoid';
+import { Toaster } from 'react-hot-toast';
 
-import ContactList from 'components/ContactList';
-import ContactForm from 'components/ContactForm';
-import Filter from 'components/Filter';
-import { Wrapper, Title, ContactsWrapper } from './App.styled';
+import { fetchImges } from '../../services/axios-api';
+import ImageGallery from 'components/ImageGallery';
+
+import Searchbar from 'components/Searchbar';
+import Modal from 'components/Modal';
+import Button from 'components/Button';
+
+import { Wrapper, Image } from './App.styled';
 
 export default class App extends Component {
   state = {
-    contacts: [],
-    filter: '',
+    searchQuery: null,
+    images: null,
+    modalUrl: null,
+    showModal: false,
+    isLoading: false,
+    page: 1,
   };
 
-  componentDidMount() {
-    const savedContacts = JSON.parse(localStorage.getItem('saved_contacts'));
-    if (savedContacts) {
-      this.setState({ contacts: savedContacts });
-    }
-  }
+  handleSearchSubmit = searchQuery => {
+    this.setState({
+      page: 1,
+      images: null,
+      isLoading: true,
+      searchQuery: searchQuery,
+    });
+    const { page } = this.state;
+
+    fetchImges(page, searchQuery)
+      .then(response =>
+        this.setState(prevState => ({
+          images: response.data.hits,
+          page: (prevState.page += 1),
+        }))
+      )
+      .finally(this.setState({ isLoading: false }));
+  };
+
+  handleClickOnLoadMoreButton = event => {
+    event.preventDefault();
+    const { page, searchQuery } = this.state;
+    this.setState({ isLoading: true });
+
+    fetchImges(page, searchQuery)
+      .then(response =>
+        this.setState(prevState => ({
+          images: [...prevState.images, ...response.data.hits],
+          page: (prevState.page += 1),
+        }))
+      )
+      .finally(this.setState({ isLoading: false }));
+  };
 
   componentDidUpdate(_, prevState) {
-    const nextContacts = this.state.contacts;
-    const prevContacts = prevState.contacts;
-
-    if (nextContacts !== prevContacts) {
-      localStorage.setItem('saved_contacts', JSON.stringify(nextContacts));
+    if (this.state.page !== prevState.page) {
+      this.smoothImagesScroll();
     }
   }
 
-  formSubmitHandler = newContact => {
-    this.setState(prevState => ({
-      contacts: [
-        ...prevState.contacts,
-        { id: nanoid(), name: newContact.name, number: newContact.number },
-      ],
+  smoothImagesScroll = () => {
+    window.scrollBy({
+      top: 1000000,
+      behavior: 'smooth',
+    });
+  };
+
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
     }));
   };
 
-  handleFilterInputChange = event => {
-    const { value } = event.target;
-    this.setState({ filter: value });
-  };
-
-  renderContacts() {
-    const { contacts, filter } = this.state;
-    return contacts
-      .filter(contact =>
-        contact.name.toLowerCase().includes(filter.toLowerCase())
-      )
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  deleteContact = id => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id),
-    }));
+  openModal = url => {
+    this.setState({ modalUrl: url });
+    this.toggleModal();
   };
 
   render() {
-    const { contacts, filter } = this.state;
-    const renderContacts = this.renderContacts();
+    const { images, showModal, modalUrl, isLoading } = this.state;
     return (
       <Wrapper>
-        <Title>Phonebook</Title>
-        <ContactForm
-          onSubmitForm={this.formSubmitHandler}
-          contacts={contacts}
-        />
-        <Title>Contacts:</Title>
-        <ContactsWrapper>
-          <Filter filter={filter} onChange={this.handleFilterInputChange} />
-          <ContactList
-            contacts={renderContacts}
-            deleteContact={this.deleteContact}
+        <Toaster />
+        {showModal && (
+          <Modal onClose={this.toggleModal}>
+            <Image src={modalUrl} alt="" />
+          </Modal>
+        )}
+        <Searchbar onSubmitForm={this.handleSearchSubmit} />
+        {images && images.length !== 0 && (
+          <ImageGallery
+            images={images}
+            handleOnClickImage={this.openModal}
+            isLoading={isLoading}
           />
-        </ContactsWrapper>
+        )}
+        {images && images.length !== 0 && (
+          <Button
+            onClick={this.handleClickOnLoadMoreButton}
+            isLoading={isLoading}
+          />
+        )}
       </Wrapper>
     );
   }
