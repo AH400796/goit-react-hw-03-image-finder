@@ -33,7 +33,7 @@ export default class App extends Component {
       .then(response =>
         this.setState(prevState => ({
           images: response.data.hits,
-          page: (prevState.page += 1),
+          page: prevState.page + 1,
         }))
       )
       .finally(this.setState({ isLoading: false }));
@@ -48,7 +48,7 @@ export default class App extends Component {
       .then(response =>
         this.setState(prevState => ({
           images: [...prevState.images, ...response.data.hits],
-          page: (prevState.page += 1),
+          page: prevState.page + 1,
         }))
       )
       .finally(this.setState({ isLoading: false }));
@@ -62,7 +62,7 @@ export default class App extends Component {
 
   smoothImagesScroll = () => {
     window.scrollBy({
-      top: 1000000,
+      top: window.innerHeight,
       behavior: 'smooth',
     });
   };
