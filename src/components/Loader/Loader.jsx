@@ -8,7 +8,7 @@ export default function Loader() {
       <ContentLoader
         speed={2}
         width={300}
-        height={260}
+        height={200}
         viewBox="0 0 400 160"
         backgroundColor="#d3d1f1"
         foregroundColor="#c5c0c0"

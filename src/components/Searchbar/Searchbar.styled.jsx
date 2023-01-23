@@ -2,6 +2,8 @@ import styled from 'styled-components';
 // import { Form, Field } from 'formik';
 
 export const Header = styled.header`
+  position: fixed;
+  top: 0;
   display: flex;
   justify-content: center;
   align-items: center;

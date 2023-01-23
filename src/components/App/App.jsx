@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Toaster } from 'react-hot-toast';
+import smoothImagesScroll from '../../services/utility-function';
+import { toastNotifyInfo, toastNotifyError } from '../../services/toast-notify';
 
 import { fetchImges } from '../../services/axios-api';
 import ImageGallery from 'components/ImageGallery';
-
 import Searchbar from 'components/Searchbar';
 import Modal from 'components/Modal';
 import Button from 'components/Button';
@@ -12,63 +13,67 @@ import { Wrapper, Image } from './App.styled';
 
 export default class App extends Component {
   state = {
-    searchQuery: null,
-    images: null,
+    searchQuery: '',
+    images: [],
     modalUrl: null,
     showModal: false,
     isLoading: false,
     page: 1,
-    lastPage: null,
+    lastPage: 1,
   };
 
   handleSearchSubmit = searchQuery => {
     this.setState({
       page: 1,
-      lastPage: null,
-      images: null,
-      isLoading: true,
+      lastPage: 1,
+      images: [],
       searchQuery: searchQuery,
     });
-    const { page } = this.state;
-
-    fetchImges(page, searchQuery)
-      .then(response => {
-        this.setState(prevState => ({
-          images: response.data.hits,
-          lastPage: Math.ceil(response.data.totalHits / 12),
-          page: prevState.page + 1,
-        }));
-      })
-      .finally(this.setState({ isLoading: false }));
   };
 
   handleClickOnLoadMoreButton = event => {
     event.preventDefault();
-    const { page, searchQuery } = this.state;
-    this.setState({ isLoading: true });
-
-    fetchImges(page, searchQuery)
-      .then(response =>
-        this.setState(prevState => ({
-          images: [...prevState.images, ...response.data.hits],
-          page: prevState.page + 1,
-        }))
-      )
-      .finally(this.setState({ isLoading: false }));
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
   };
 
   componentDidUpdate(_, prevState) {
-    if (this.state.page > prevState.page) {
-      setTimeout(this.smoothImagesScroll, 500);
+    const { page, searchQuery, lastPage } = this.state;
+    if (lastPage === 0) {
+      toastNotifyInfo('No data found on your request');
+    }
+    if (page !== prevState.page || searchQuery !== prevState.searchQuery) {
+      this.setState({ isLoading: true });
+      fetchImges(page, searchQuery)
+        .then(response => {
+          if (page !== prevState.page) {
+            this.setState(prevState => ({
+              images: [...prevState.images, ...response.data.hits],
+            }));
+          } else if (searchQuery !== prevState.searchQuery) {
+            this.setState({
+              images: response.data.hits,
+              lastPage: Math.ceil(response.data.totalHits / 12),
+            });
+          }
+        })
+        .catch(function (error) {
+          if (error.response) {
+            toastNotifyError(error.response.data);
+          } else if (error.request) {
+            toastNotifyError('XMLHttpRequest failed');
+          } else {
+            toastNotifyError('Error', error.message);
+          }
+          console.log(error.config);
+        })
+        .finally(
+          this.setState({ isLoading: false }),
+          setTimeout(smoothImagesScroll, 750)
+        );
     }
   }
-
-  smoothImagesScroll = () => {
-    window.scrollBy({
-      top: window.innerHeight,
-      behavior: 'smooth',
-    });
-  };
 
   toggleModal = () => {
     this.setState(({ showModal }) => ({
@@ -93,14 +98,14 @@ export default class App extends Component {
           </Modal>
         )}
         <Searchbar onSubmitForm={this.handleSearchSubmit} />
-        {images && images.length !== 0 && (
+        {images.length !== 0 && (
           <ImageGallery
             images={images}
             handleOnClickImage={this.openModal}
             isLoading={isLoading}
           />
         )}
-        {images && images.length !== 0 && page !== lastPage && (
+        {images.length !== 0 && page !== lastPage && (
           <Button
             onClick={this.handleClickOnLoadMoreButton}
             isLoading={isLoading}

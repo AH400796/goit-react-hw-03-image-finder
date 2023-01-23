@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { Header, Form, Input, Button } from './Searchbar.styled';
 import { AiOutlineSearch } from 'react-icons/ai';
-import toast from 'react-hot-toast';
+import { toastNotifyInfo } from '../../services/toast-notify';
+
+const searchformRoot = document.querySelector('#searchform-root');
 
 export default class Searchbar extends Component {
   state = {
@@ -18,19 +21,7 @@ export default class Searchbar extends Component {
     const { onSubmitForm } = this.props;
     const { searchQuery } = this.state;
     if (searchQuery.trim() === '') {
-      toast('Please, specify your search criteria', {
-        style: {
-          fontSize: '16px',
-          border: '1px solid #020071',
-          padding: '10px',
-          color: '#020071',
-        },
-        iconTheme: {
-          primary: '#020071',
-          secondary: '#FFFAEE',
-        },
-        position: 'top-right',
-      });
+      toastNotifyInfo('Please, specify your search criteria');
       return;
     }
     onSubmitForm(searchQuery);
@@ -43,7 +34,7 @@ export default class Searchbar extends Component {
   };
 
   render() {
-    return (
+    return createPortal(
       <Header>
         <Form onSubmit={this.handleSubmitForm}>
           <Button type="submit">
@@ -57,7 +48,8 @@ export default class Searchbar extends Component {
             onChange={this.handleInputChange}
           />
         </Form>
-      </Header>
+      </Header>,
+      searchformRoot
     );
   }
 }

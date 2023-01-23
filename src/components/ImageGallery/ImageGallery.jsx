@@ -23,7 +23,7 @@ export default function ImageGallery({
           })}
         </List>
       )}
-      {images && (
+      {!isLoading && images && (
         <List>
           {images.map(image => {
             const { id, webformatURL, largeImageURL } = image;
@@ -33,7 +33,6 @@ export default function ImageGallery({
                 webformatURL={webformatURL}
                 largeImageURL={largeImageURL}
                 handleOnClickImage={handleOnClickImage}
-                isLoading={isLoading}
               />
             );
           })}
@@ -46,4 +45,5 @@ export default function ImageGallery({
 ImageGallery.propTypes = {
   images: PropTypes.arrayOf(PropTypes.object).isRequired,
   handleOnClickImage: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
 };
