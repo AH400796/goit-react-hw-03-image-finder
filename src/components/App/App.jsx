@@ -50,6 +50,7 @@ export default class App extends Component {
           if (page !== prevState.page) {
             this.setState(prevState => ({
               images: [...prevState.images, ...response.data.hits],
+              lastPage: Math.ceil(response.data.totalHits / 12),
             }));
           } else if (searchQuery !== prevState.searchQuery) {
             this.setState({

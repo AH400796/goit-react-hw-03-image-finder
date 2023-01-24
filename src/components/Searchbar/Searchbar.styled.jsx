@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-// import { Form, Field } from 'formik';
 
 export const Header = styled.header`
   position: fixed;
@@ -15,14 +14,6 @@ export const Header = styled.header`
   background-color: #314588;
   box-shadow: 1px 2px 5px rgb(95, 95, 95);
 `;
-
-// export const InputLabel = styled.label`
-//   position: relative;
-//   display: flex;
-//   flex-direction: column;
-//   gap: 10px;
-//   font-size: 20px;
-// `;
 
 export const Input = styled.input`
   padding-top: 10px;
