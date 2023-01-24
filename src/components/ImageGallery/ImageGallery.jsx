@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ImageGalleryItem from 'components/ImageGalleryItem';
-import Loader from 'components/Loader';
+import Skeleton from 'components/Skeleton';
 import { List } from './ImageGallery.styled';
 
 let skeletons = [];
@@ -19,7 +19,7 @@ export default function ImageGallery({
       {isLoading && (
         <List>
           {skeletons.map((el, idx) => {
-            return <Loader key={idx} />;
+            return <Skeleton key={idx} />;
           })}
         </List>
       )}
