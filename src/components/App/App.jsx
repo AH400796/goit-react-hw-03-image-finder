@@ -39,12 +39,13 @@ export default class App extends Component {
   };
 
   componentDidUpdate(_, prevState) {
+    smoothImagesScroll();
     const { page, searchQuery, lastPage } = this.state;
     if (lastPage === 0) {
       toastNotifyInfo('No data found on your request');
     }
     if (page !== prevState.page || searchQuery !== prevState.searchQuery) {
-      this.setState({ isLoading: true });
+      this.toggleIsLoading();
       fetchImges(page, searchQuery)
         .then(response => {
           if (page !== prevState.page) {
@@ -69,12 +70,13 @@ export default class App extends Component {
           }
           console.log(error.config);
         })
-        .finally(
-          this.setState({ isLoading: false }),
-          setTimeout(smoothImagesScroll, 750)
-        );
+        .finally(this.toggleIsLoading(), setTimeout(smoothImagesScroll, 1250));
     }
   }
+
+  toggleIsLoading = () => {
+    this.setState(prevState => ({ isLoading: !prevState.isLoading }));
+  };
 
   toggleModal = () => {
     this.setState(({ showModal }) => ({
@@ -99,13 +101,11 @@ export default class App extends Component {
           </Modal>
         )}
         <Searchbar onSubmitForm={this.handleSearchSubmit} />
-        {images.length !== 0 && (
-          <ImageGallery
-            images={images}
-            handleOnClickImage={this.openModal}
-            isLoading={isLoading}
-          />
-        )}
+        <ImageGallery
+          images={images}
+          handleOnClickImage={this.openModal}
+          isLoading={isLoading}
+        />
         {images.length !== 0 && page !== lastPage && (
           <Button
             onClick={this.handleClickOnLoadMoreButton}

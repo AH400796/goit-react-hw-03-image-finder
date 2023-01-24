@@ -23,9 +23,9 @@ export default function ImageGallery({
           })}
         </List>
       )}
-      {!isLoading && images && (
+      {!isLoading && (
         <List>
-          {images.map(image => {
+          {images?.map(image => {
             const { id, webformatURL, largeImageURL } = image;
             return (
               <ImageGalleryItem
