@@ -4,9 +4,9 @@ import ImageGalleryItem from 'components/ImageGalleryItem';
 import Loader from 'components/Loader';
 import { List } from './ImageGallery.styled';
 
-let skeleton = [];
+let skeletons = [];
 for (let i = 0; i < 12; i += 1) {
-  skeleton.push(i);
+  skeletons.push(i);
 }
 
 export default function ImageGallery({
@@ -18,15 +18,14 @@ export default function ImageGallery({
     <>
       {isLoading && (
         <List>
-          {skeleton.map((el, idx) => {
+          {skeletons.map((el, idx) => {
             return <Loader key={idx} />;
           })}
         </List>
       )}
       {!isLoading && (
         <List>
-          {images?.map(image => {
-            const { id, webformatURL, largeImageURL } = image;
+          {images?.map(({ id, webformatURL, largeImageURL }) => {
             return (
               <ImageGalleryItem
                 key={id}
