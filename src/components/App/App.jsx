@@ -70,7 +70,7 @@ export default class App extends Component {
           }
           console.log(error.config);
         })
-        .finally(this.toggleIsLoading(), setTimeout(smoothImagesScroll, 1250));
+        .finally(this.toggleIsLoading(), smoothImagesScroll());
     }
   }
 
